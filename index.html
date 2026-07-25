@@ -89,7 +89,7 @@
 
   /* ---------- detail dialog ---------- */
   dialog {
-    border: none; border-radius: 16px; padding: 0; width: min(680px, 92vw);
+    border: none; border-radius: 16px; padding: 0; width: min(816px, 94vw);
     box-shadow: 0 24px 70px rgba(0,0,0,.28); background: var(--card); color: var(--ink);
   }
   dialog::backdrop { background: rgba(20,20,20,.5); backdrop-filter: blur(2px); }
@@ -121,10 +121,10 @@
   .frame .ph { color: var(--faint); font-size: 12px; padding: 12px; text-align: center; }
   .panel .val {
     font-variant-numeric: tabular-nums; font-weight: 800; font-size: 24px;
-    letter-spacing: -.01em; margin-top: 12px;
+    letter-spacing: -.01em; margin-top: 12px; overflow-wrap: break-word;
   }
   .panel .lbl { font-size: 13px; color: var(--muted); margin-top: 2px; }
-  .panel .fact { font-size: 13px; color: var(--muted); margin-top: 8px; line-height: 1.45; }
+  .panel .fact { font-size: 13px; color: var(--muted); margin-top: 8px; line-height: 1.45; text-align: left; }
   .q {
     margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--hair);
     font-size: 16.5px; line-height: 1.5;
@@ -176,6 +176,7 @@ const TOTAL = 76;
 const IMG_EXT = "jpg";                 // change to "png" if your images are pngs
 const IMG_DIR = "img";
 const pad = n => String(n).padStart(2, "0");
+const glueUnit = v => String(v).replace(/\s(\S+)$/, "\u00A0$1");
 const imgA = n => `${IMG_DIR}/${pad(n)}-a.${IMG_EXT}`;
 const imgB = n => `${IMG_DIR}/${pad(n)}-b.${IMG_EXT}`;
 
@@ -632,14 +633,14 @@ function openDetail(n) {
     <div class="versus">
       <div class="panel">
         ${frame(n, "a", e)}
-        <div class="val">${e.a.num}</div>
+        <div class="val">${glueUnit(e.a.num)}</div>
         <div class="lbl">${e.a.label}</div>
         <div class="fact">${e.a.fact}</div>
       </div>
       <div class="vs-badge">VS</div>
       <div class="panel">
         ${frame(n, "b", e)}
-        <div class="val">${e.b.num}</div>
+        <div class="val">${glueUnit(e.b.num)}</div>
         <div class="lbl">${e.b.label}</div>
         <div class="fact">${e.b.fact}</div>
       </div>
