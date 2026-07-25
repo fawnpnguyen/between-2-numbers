@@ -134,6 +134,31 @@
   .tips { color: #8a8a8a; font-size: 12px; margin-top: 30px; line-height: 1.7; }
   .tips code { background: #eee; padding: 1px 5px; border-radius: 3px; font-size: 11px; }
 
+  .site-foot {
+    max-width: 640px; margin: 40px auto 0; padding-top: 22px;
+    border-top: 1px solid var(--hair);
+    color: var(--muted); font-size: 12.5px; line-height: 1.7; text-align: center;
+  }
+  .site-foot a { color: var(--amber-deep); text-decoration: none; }
+  .site-foot a:hover { text-decoration: underline; }
+
+  .nav {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    width: 40px; height: 40px; border-radius: 999px;
+    border: 1px solid #d8d8d8; background: #fff; color: var(--ink);
+    font-size: 24px; line-height: 1; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 14px rgba(0,0,0,.20); z-index: 5;
+  }
+  .nav:hover { background: #f3f3f3; }
+  .nav:disabled { opacity: .3; cursor: default; box-shadow: none; }
+  .nav.prev { left: 12px; }
+  .nav.next { right: 12px; }
+  @media (max-width: 560px) {
+    .nav.prev { left: 6px; }
+    .nav.next { right: 6px; }
+  }
+
   @media (max-width: 520px) {
     h1 { font-size: 34px; }
     .versus { grid-template-columns: 1fr; }
@@ -158,15 +183,16 @@
 
   <div class="wall" id="wall"></div>
 
-  <div class="tips">
-    <div><strong>Adding an entry:</strong> drop two images in <code>img/</code> named <code>NN-a.jpg</code> and <code>NN-b.jpg</code>, then add one block to <code>ENTRIES</code>. That's it — the tile goes live and the "coming soon" placeholder disappears.</div>
-    <div><strong>Images are inferred</strong> from the entry number, so you never type an image path. Prefer <code>.png</code>? Change <code>IMG_EXT</code> once at the top.</div>
-    <div><strong>Entry 1</strong> is fully wired as a proof of concept (with placeholder art baked in so it renders before you've added real photos).</div>
-  </div>
+  <footer class="site-foot">
+    Copyright &copy; 2026 Between 2 Numbers by <a href="https://fawnnguyen.substack.com/" target="_blank" rel="noopener">Fawn Nguyen</a>.<br>
+    This work is licensed under a <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">Creative Commons Attribution 4.0 International License</a>.
+  </footer>
 </div>
 
 <dialog id="detail">
   <button class="close" aria-label="Close" onclick="document.getElementById('detail').close()">&times;</button>
+  <button class="nav prev" aria-label="Previous entry" onclick="navDetail(-1)">&lsaquo;</button>
+  <button class="nav next" aria-label="Next entry" onclick="navDetail(1)">&rsaquo;</button>
   <div class="sheet" id="sheet"></div>
 </dialog>
 
@@ -625,9 +651,25 @@ function frame(n, side, e) {
   </div>`;
 }
 
+let currentN = null;
+function firstExisting(start, dir) {
+  for (let n = start; n >= 1 && n <= TOTAL; n += dir) if (ENTRIES[n]) return n;
+  return null;
+}
+function updateNav() {
+  dlg.querySelector(".nav.prev").disabled = firstExisting(currentN - 1, -1) === null;
+  dlg.querySelector(".nav.next").disabled = firstExisting(currentN + 1, 1) === null;
+}
+function navDetail(dir) {
+  if (currentN === null) return;
+  const t = firstExisting(currentN + dir, dir);
+  if (t !== null) openDetail(t);
+}
+
 function openDetail(n) {
   const e = ENTRIES[n];
   if (!e) return;
+  currentN = n;
   sheet.innerHTML = `
     <div class="no">Between 2 Numbers · No. ${n}</div>
     <div class="versus">
@@ -647,6 +689,7 @@ function openDetail(n) {
     </div>
     <div class="q"><b>Q.</b>${e.q}</div>`;
   dlg.showModal();
+  updateNav();
 }
 
 wall.addEventListener("click", ev => {
@@ -659,8 +702,13 @@ wall.addEventListener("keydown", ev => {
   if (t && !t.classList.contains("empty")) { ev.preventDefault(); openDetail(+t.dataset.n); }
 });
 dlg.addEventListener("click", ev => {           // click backdrop to close
+  if (ev.target.closest(".nav") || ev.target.closest(".close")) return;
   const r = dlg.querySelector(".sheet").getBoundingClientRect();
   if (ev.clientX < r.left || ev.clientX > r.right || ev.clientY < r.top || ev.clientY > r.bottom) dlg.close();
+});
+dlg.addEventListener("keydown", ev => {         // arrow keys flip entries
+  if (ev.key === "ArrowLeft")  { ev.preventDefault(); navDetail(-1); }
+  if (ev.key === "ArrowRight") { ev.preventDefault(); navDetail(1); }
 });
 
 /* ---------- search ---------- */
