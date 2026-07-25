@@ -39,6 +39,8 @@
     color: var(--faint); font-size: 13px;
   }
   .bar .count b { color: var(--amber-deep); font-weight: 700; }
+  .byline { font-size: 15px; color: var(--muted); text-decoration: none; }
+  .byline:hover { color: var(--amber-deep); text-decoration: underline; }
   #search {
     margin-left: auto; padding: 8px 12px; border: 1px solid var(--hair);
     border-radius: 8px; font-size: 13px; width: 220px; background: var(--card);
@@ -176,7 +178,7 @@
     <h1>Between <span class="num">2</span> Numbers</h1>
     <p class="blurb">Two things, wildly far apart. Two facts, one question, and all the distance in between. Pick a pairing.</p>
     <div class="bar">
-      <span class="count"><b id="filled">1</b> of <span id="total">76</span> live</span>
+      <a class="byline" href="https://fawnnguyen.substack.com/" target="_blank" rel="noopener">Fawn Nguyen</a>
       <input id="search" type="search" placeholder="Search a pairing…" aria-label="Search pairings">
     </div>
   </header>
@@ -637,7 +639,6 @@ for (let n = 1; n <= TOTAL; n++) {
   html += tileHTML(n, e);
 }
 wall.innerHTML = html;
-document.getElementById("filled").textContent = liveCount;
 
 /* ---------- detail dialog ---------- */
 const dlg = document.getElementById("detail");
